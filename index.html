@@ -11,7 +11,7 @@
             text-align: center;
         }
         #logo {
-            width: 200px; /* Ajusta el tamaño del logo */
+            width: 200px;
             margin-top: 20px;
         }
         table {
@@ -25,11 +25,10 @@
         }
     </style>
     <script>
-        var allData = []; // Almacena todos los datos para futuras búsquedas
-        var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"]; // Columnas que NO se mostrarán
+        var allData = []; 
+        var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"]; 
 
         $(document).ready(function() {
-            // Cargar los datos desde la API
             $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
                 console.log("Datos cargados desde la API:", data);
                 allData = data;
@@ -38,7 +37,6 @@
                 $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
             });
 
-            // Manejar la búsqueda al enviar el formulario
             $("#searchForm").submit(function(event) {
                 event.preventDefault();
                 var searchValue = $("#searchInput").val().trim().toLowerCase();
@@ -68,25 +66,28 @@
             });
         });
 
-        // Función para mostrar los datos en tabla
         function displayTable(data) {
-            var headers = Object.keys(data[0]).filter(header => !hiddenColumns.includes(header)); // Filtrar columnas ocultas
+            var headers = Object.keys(data[0]).filter(header => !hiddenColumns.includes(header));
+            
+            // Asegurar que "Assigned to" esté como primera columna si existe
+            if (headers.includes("Assigned to")) {
+                headers = headers.filter(h => h !== "Assigned to");
+                headers.unshift("Assigned to"); // Mover "Assigned to" al inicio
+            }
+
             var table = "<table><thead><tr>";
 
-            // Crear encabezados dinámicos sin las columnas ocultas
             $.each(headers, function(index, header) {
                 table += "<th>" + header + "</th>";
             });
 
             table += "</tr></thead><tbody>";
 
-            // Agregar filas dinámicamente sin las columnas ocultas
             $.each(data, function(key, value) {
                 table += "<tr>";
                 $.each(headers, function(index, header) {
                     var cellData = value[header] || "";
                     
-                    // Si la columna es "Asset Photo", mostrar la imagen en lugar del enlace
                     if (header.toLowerCase() === "asset photo" && cellData.startsWith("http")) {
                         table += "<td><img src='" + cellData + "' width='100' height='100'></td>";
                     } else {
@@ -102,25 +103,22 @@
     </script>
 </head>
 <body>
-    <!-- Logo -->
-    <img id="logo" src="https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png" alt="American School Foundation of Guadalajara">
+    <img id="logo" src="https://www.asfg.mx/images/logo_asfg.png" alt="American School Foundation of Guadalajara">
 
     <h2>Consulta de Recursos</h2>
 
-    <!-- Mensaje de Bienvenida -->
     <div id="welcomeMessage" style="display:none;">
-        <h3>Bienvenido, por favor ingresa tu Employee ID para consultar tus recursos asignados.</h3>
+        <h3>Bienvenido, por favor ingresa tu Nombre o Employee ID para consultar tus recursos asignados.</h3>
     </div>
 
-    <!-- Formulario de Búsqueda -->
     <form id="searchForm">
-        <label for="searchInput">Ingresa tu Employee ID:</label>
+        <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
         <input type="text" id="searchInput" required>
         <button type="submit">Buscar</button>
     </form>
 
-    <!-- Contenedor donde se mostrarán los datos -->
     <div id="data"></div>
 </body>
 </html>
+
 
