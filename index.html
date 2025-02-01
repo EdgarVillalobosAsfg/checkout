@@ -7,13 +7,14 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         var allData = []; // Almacena todos los datos para futuras búsquedas
+        var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"]; // Columnas que NO se mostrarán
 
         $(document).ready(function() {
             // Cargar los datos desde la API
             $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
-                console.log("Datos cargados desde la API:", data); // 🟢 Depuración: Muestra los datos recibidos
-                allData = data; // Guardamos todos los datos en memoria
-                $("#welcomeMessage").show(); // Mostrar mensaje de bienvenida
+                console.log("Datos cargados desde la API:", data);
+                allData = data;
+                $("#welcomeMessage").show();
             }).fail(function() {
                 $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
             });
@@ -22,27 +23,26 @@
             $("#searchForm").submit(function(event) {
                 event.preventDefault();
                 var searchValue = $("#searchInput").val().trim().toLowerCase();
-                console.log("Valor ingresado en la búsqueda:", searchValue); // 🟢 Depuración
+                console.log("Valor ingresado en la búsqueda:", searchValue);
 
                 if (searchValue === "") {
                     alert("Por favor ingresa tu Nombre o Employee ID.");
                     return;
                 }
 
-                // Convertir todas las claves a minúsculas para evitar errores
                 var filteredData = allData.filter(function(item) {
-                    console.log("Analizando item:", item); // 🟢 Depuración
+                    console.log("Analizando item:", item);
                     var name = item["Name"] ? item["Name"].toLowerCase() : "";
                     var employeeID = item["Employee ID"] ? item["Employee ID"].toLowerCase() : "";
                     
                     return name.includes(searchValue) || employeeID.includes(searchValue);
                 });
 
-                console.log("Resultados encontrados:", filteredData); // 🟢 Depuración
+                console.log("Resultados encontrados:", filteredData);
 
                 if (filteredData.length > 0) {
                     displayTable(filteredData);
-                    $("#welcomeMessage").hide(); // Ocultar mensaje de bienvenida
+                    $("#welcomeMessage").hide();
                 } else {
                     $("#data").html("<p style='color:red;'>No se encontraron recursos asignados. Verifica que el nombre o ID estén bien escritos.</p>");
                 }
@@ -51,17 +51,17 @@
 
         // Función para mostrar los datos en tabla
         function displayTable(data) {
-            var headers = Object.keys(data[0]);
+            var headers = Object.keys(data[0]).filter(header => !hiddenColumns.includes(header)); // Filtrar columnas ocultas
             var table = "<table border='1' width='100%'><thead><tr>";
 
-            // Crear encabezados de forma dinámica
+            // Crear encabezados dinámicos sin las columnas ocultas
             $.each(headers, function(index, header) {
                 table += "<th>" + header + "</th>";
             });
 
             table += "</tr></thead><tbody>";
 
-            // Agregar filas dinámicamente
+            // Agregar filas dinámicamente sin las columnas ocultas
             $.each(data, function(key, value) {
                 table += "<tr>";
                 $.each(headers, function(index, header) {
@@ -101,4 +101,3 @@
     <div id="data"></div>
 </body>
 </html>
-
