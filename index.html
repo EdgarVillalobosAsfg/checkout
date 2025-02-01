@@ -6,6 +6,8 @@
     <title>Consulta de Recursos</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,13 +58,7 @@
         var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"];
 
         $(document).ready(function() {
-            $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
-                console.log("Datos cargados desde la API:", data);
-                allData = data;
-                $("#welcomeMessage").show();
-            }).fail(function() {
-                $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
-            });
+            fetchData();
 
             $("#searchForm").submit(function(event) {
                 event.preventDefault();
@@ -82,7 +78,7 @@
 
                 if (filteredData.length > 0) {
                     displayTable(filteredData);
-                    $("#exportButtons").show(); // Mostrar botón de exportación
+                    $("#exportButtons").show(); 
                     $("#welcomeMessage").hide();
                 } else {
                     $("#data").html("<p style='color:red;'>No se encontraron recursos asignados.</p>");
@@ -95,6 +91,16 @@
             });
         });
 
+        function fetchData() {
+            $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
+                console.log("Datos cargados desde la API:", data);
+                allData = data;
+                $("#welcomeMessage").show();
+            }).fail(function() {
+                $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
+            });
+        }
+
         function displayTable(data) {
             var headers = Object.keys(data[0]).map(header => header.trim());
             headers = headers.filter(header => !hiddenColumns.includes(header));
@@ -104,7 +110,7 @@
                 headers.unshift("Assigned to"); 
             }
 
-            var table = "<table id='dataTable'><thead><tr>";
+            var table = "<table id='dataTable' class='display'><thead><tr>";
 
             $.each(headers, function(index, header) {
                 table += "<th>" + header + "</th>";
@@ -128,6 +134,26 @@
 
             table += "</tbody></table>";
             $("#data").html(table);
+
+            // Aplicar DataTables para búsqueda en tiempo real y ordenación
+            $('#dataTable').DataTable({
+                "paging": true,  // Agregar paginación
+                "ordering": true,  // Habilitar ordenación por columnas
+                "info": true,  // Mostrar información de cuántos registros hay
+                "language": {
+                    "search": "Buscar:",
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(filtrado de _MAX_ registros en total)",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                }
+            });
         }
 
         function exportToCSV() {
