@@ -183,18 +183,54 @@
             saveAs(csvFile, "Recursos_Asignados.csv");
         }
 
-        function exportToPDF() {
-            var { jsPDF } = window.jspdf;
-            var doc = new jsPDF();
+    function exportToPDF() {
+    var { jsPDF } = window.jspdf;
+    var doc = new jsPDF('p', 'mm', 'a4');
 
-            var img = new Image();
-            img.src = "https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png";
-            doc.addImage(img, 'PNG', 10, 10, 50, 30);
+    // Agregar el logo en la parte superior
+    var img = new Image();
+    img.src = "https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png";
+    doc.addImage(img, 'PNG', 10, 10, 40, 20); // Posición y tamaño del logo
 
-            doc.text("Reporte de Recursos Asignados", 70, 20);
-            doc.autoTable({ html: "#dataTable", startY: 50 });
-            doc.save("Recursos_Asignados.pdf");
-        }
+    // Título del documento
+    doc.setFontSize(16);
+    doc.text("Reporte de Recursos Asignados", 70, 20);
+    doc.setFontSize(12);
+
+    // Obtener la tabla de datos
+    var headers = [];
+    var data = [];
+
+    $("#dataTable thead tr th").each(function() {
+        headers.push($(this).text().trim());
+    });
+
+    $("#dataTable tbody tr").each(function() {
+        var rowData = [];
+        $(this).find("td").each(function(index) {
+            // Omitimos imágenes de la columna "Asset Photo"
+            if (headers[index].toLowerCase() === "asset photo") {
+                rowData.push("[Imagen]");
+            } else {
+                rowData.push($(this).text().trim());
+            }
+        });
+        data.push(rowData);
+    });
+
+    // Crear tabla en el PDF
+    doc.autoTable({
+        head: [headers],
+        body: data,
+        startY: 40, // Espaciado debajo del logo
+        theme: 'grid',
+        styles: { fontSize: 10 }
+    });
+
+    // Guardar el archivo PDF
+    doc.save("Recursos_Asignados.pdf");
+}
+
     </script>
 </body>
 </html>
