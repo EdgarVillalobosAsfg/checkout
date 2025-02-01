@@ -5,6 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Recursos</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #logo {
+            width: 200px; /* Ajusta el tamaño del logo */
+            margin-top: 20px;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
     <script>
         var allData = []; // Almacena todos los datos para futuras búsquedas
         var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"]; // Columnas que NO se mostrarán
@@ -52,7 +71,7 @@
         // Función para mostrar los datos en tabla
         function displayTable(data) {
             var headers = Object.keys(data[0]).filter(header => !hiddenColumns.includes(header)); // Filtrar columnas ocultas
-            var table = "<table border='1' width='100%'><thead><tr>";
+            var table = "<table><thead><tr>";
 
             // Crear encabezados dinámicos sin las columnas ocultas
             $.each(headers, function(index, header) {
@@ -83,16 +102,19 @@
     </script>
 </head>
 <body>
-    <h2>Consulta de Recursos Asignados</h2>
+    <!-- Logo -->
+    <img id="logo" src="https://www.asfg.mx/images/logo_asfg.png" alt="American School Foundation of Guadalajara">
+
+    <h2>Consulta de Recursos</h2>
 
     <!-- Mensaje de Bienvenida -->
     <div id="welcomeMessage" style="display:none;">
-        <h3>Bienvenido, por favor ingresa tu Employee ID para consultar tus recursos asignados.</h3>
+        <h3>Bienvenido, por favor ingresa tu Nombre o Employee ID para consultar tus recursos asignados.</h3>
     </div>
 
     <!-- Formulario de Búsqueda -->
     <form id="searchForm">
-        <label for="searchInput">Ingresa tu Employee ID:</label>
+        <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
         <input type="text" id="searchInput" required>
         <button type="submit">Buscar</button>
     </form>
@@ -101,3 +123,4 @@
     <div id="data"></div>
 </body>
 </html>
+
