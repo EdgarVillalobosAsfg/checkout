@@ -67,12 +67,16 @@
         });
 
         function displayTable(data) {
-            var headers = Object.keys(data[0]).filter(header => !hiddenColumns.includes(header));
+            // Convertir nombres de columnas a un formato sin espacios extra
+            var headers = Object.keys(data[0]).map(header => header.trim());
             
-            // Asegurar que "Assigned to" esté como primera columna si existe
+            // Eliminar las columnas ocultas
+            headers = headers.filter(header => !hiddenColumns.includes(header));
+
+            // Asegurar que "Assigned to" sea la primera columna si existe
             if (headers.includes("Assigned to")) {
                 headers = headers.filter(h => h !== "Assigned to");
-                headers.unshift("Assigned to"); // Mover "Assigned to" al inicio
+                headers.unshift("Assigned to"); 
             }
 
             var table = "<table><thead><tr>";
@@ -120,5 +124,3 @@
     <div id="data"></div>
 </body>
 </html>
-
-
