@@ -11,6 +11,7 @@
         $(document).ready(function() {
             // Cargar los datos desde la API
             $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
+                console.log("Datos cargados desde la API:", data); // 🟢 Depuración: Muestra los datos recibidos
                 allData = data; // Guardamos todos los datos en memoria
                 $("#welcomeMessage").show(); // Mostrar mensaje de bienvenida
             }).fail(function() {
@@ -21,19 +22,23 @@
             $("#searchForm").submit(function(event) {
                 event.preventDefault();
                 var searchValue = $("#searchInput").val().trim().toLowerCase();
+                console.log("Valor ingresado en la búsqueda:", searchValue); // 🟢 Depuración
 
                 if (searchValue === "") {
-                    alert("Por favor ingresa tu Nombre o EmployeeID.");
+                    alert("Por favor ingresa tu Nombre o Employee ID.");
                     return;
                 }
 
                 // Convertir todas las claves a minúsculas para evitar errores
                 var filteredData = allData.filter(function(item) {
-                    var nombre = item.Usuario ? item.Usuario.toLowerCase() : "";
-                    var employeeID = item.EmployeeID ? item.EmployeeID.toLowerCase() : "";
+                    console.log("Analizando item:", item); // 🟢 Depuración
+                    var name = item["Name"] ? item["Name"].toLowerCase() : "";
+                    var employeeID = item["Employee ID"] ? item["Employee ID"].toLowerCase() : "";
                     
-                    return nombre.includes(searchValue) || employeeID.includes(searchValue);
+                    return name.includes(searchValue) || employeeID.includes(searchValue);
                 });
+
+                console.log("Resultados encontrados:", filteredData); // 🟢 Depuración
 
                 if (filteredData.length > 0) {
                     displayTable(filteredData);
@@ -82,12 +87,12 @@
 
     <!-- Mensaje de Bienvenida -->
     <div id="welcomeMessage" style="display:none;">
-        <h3>Bienvenido, por favor ingresa tu Nombre o EmployeeID para consultar tus recursos asignados.</h3>
+        <h3>Bienvenido, por favor ingresa tu Nombre o Employee ID para consultar tus recursos asignados.</h3>
     </div>
 
     <!-- Formulario de Búsqueda -->
     <form id="searchForm">
-        <label for="searchInput">Ingresa tu Nombre o EmployeeID:</label>
+        <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
         <input type="text" id="searchInput" required>
         <button type="submit">Buscar</button>
     </form>
