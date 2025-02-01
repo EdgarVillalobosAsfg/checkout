@@ -14,7 +14,7 @@
                 allData = data; // Guardamos todos los datos en memoria
                 $("#welcomeMessage").show(); // Mostrar mensaje de bienvenida
             }).fail(function() {
-                $("#data").html("Error al cargar los datos.");
+                $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
             });
 
             // Manejar la búsqueda al enviar el formulario
@@ -27,16 +27,19 @@
                     return;
                 }
 
+                // Convertir todas las claves a minúsculas para evitar errores
                 var filteredData = allData.filter(function(item) {
-                    return item.Usuario.toLowerCase().includes(searchValue) || 
-                           (item.EmployeeID && item.EmployeeID.toLowerCase().includes(searchValue));
+                    var nombre = item.Usuario ? item.Usuario.toLowerCase() : "";
+                    var employeeID = item.EmployeeID ? item.EmployeeID.toLowerCase() : "";
+                    
+                    return nombre.includes(searchValue) || employeeID.includes(searchValue);
                 });
 
                 if (filteredData.length > 0) {
                     displayTable(filteredData);
                     $("#welcomeMessage").hide(); // Ocultar mensaje de bienvenida
                 } else {
-                    $("#data").html("<p>No se encontraron recursos asignados.</p>");
+                    $("#data").html("<p style='color:red;'>No se encontraron recursos asignados. Verifica que el nombre o ID estén bien escritos.</p>");
                 }
             });
         });
@@ -93,3 +96,4 @@
     <div id="data"></div>
 </body>
 </html>
+
