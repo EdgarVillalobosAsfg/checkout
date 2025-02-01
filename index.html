@@ -41,7 +41,7 @@
     <!-- Búsqueda en Tiempo Real -->
     <form id="searchForm">
         <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
-        <input type="text" id="searchInput" onkeyup="searchLive()">
+        <input type="text" id="searchInput">
     </form>
 
     <!-- Botón de Exportación a CSV -->
@@ -57,6 +57,12 @@
 
         $(document).ready(function() {
             fetchData();
+
+            // Búsqueda en tiempo real al escribir en el campo de búsqueda
+            $("#searchInput").on("keyup", function() {
+                searchLive();
+            });
+
             $("#exportCSV").click(function() {
                 exportToCSV();
             });
@@ -73,7 +79,7 @@
         }
 
         function searchLive() {
-            var searchValue = document.getElementById("searchInput").value.trim().toLowerCase();
+            var searchValue = $("#searchInput").val().trim().toLowerCase();
 
             var filteredData = allData.filter(function(item) {
                 var name = item["Name"] ? item["Name"].toLowerCase() : "";
