@@ -1,178 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Recursos</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        #container {
-            width: 90%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        #logo {
-            width: 200px;
-            margin-top: 10px;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div id="container">
-        <img id="logo" src="https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png" alt="American School Foundation of Guadalajara">
-        
-        <h2>Consulta de Recursos</h2>
+function displayTable(data) {
+    var headers = Object.keys(data[0]).map(header => header.trim());
+    headers = headers.filter(header => !hiddenColumns.includes(header));
 
-        <div id="welcomeMessage">
-            <h3>Bienvenido, por favor ingresa tu Nombre o Employee ID para consultar tus recursos asignados.</h3>
-        </div>
+    if (headers.includes("Assigned to")) {
+        headers = headers.filter(h => h !== "Assigned to");
+        headers.unshift("Assigned to"); 
+    }
 
-        <!-- Búsqueda -->
-        <form id="searchForm">
-            <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
-            <input type="text" id="searchInput">
-        </form>
+    var table = "<table id='dataTable' class='display'><thead><tr>";
 
-        <!-- Botones de Exportación -->
-        <div id="exportButtons" style="display:none;">
-            <button id="exportCSV">📥 Exportar a CSV</button>
-            <button id="exportPDF">📄 Exportar a PDF</button>
-        </div>
+    $.each(headers, function(index, header) {
+        table += "<th>" + header + "</th>";
+    });
 
-        <div id="data"></div>
-    </div>
+    table += "</tr></thead><tbody>";
 
-    <script>
-        var allData = []; 
-        var hiddenColumns = ["Check-out Date", "Email", "Employee ID", "Name"];
+    $.each(data, function(key, value) {
+        table += "<tr>";
+        $.each(headers, function(index, header) {
+            var cellData = value[header] || "";
 
-        $(document).ready(function() {
-            fetchData();
-
-            // Búsqueda en tiempo real
-            $("#searchInput").on("keyup", function() {
-                searchLive();
-            });
-
-            $("#exportCSV").click(function() {
-                exportToCSV();
-            });
-
-            $("#exportPDF").click(function() {
-                exportToPDF();
-            });
-        });
-
-        function fetchData() {
-            $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
-                allData = data;
-                displayTable(allData);
-            }).fail(function() {
-                $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
-            });
-        }
-
-        function searchLive() {
-            var searchValue = $("#searchInput").val().trim().toLowerCase();
-
-            var filteredData = allData.filter(function(item) {
-                var name = item["Name"] ? item["Name"].toLowerCase() : "";
-                var employeeID = item["Employee ID"] ? item["Employee ID"].toLowerCase() : "";
-                return name.includes(searchValue) || employeeID.includes(searchValue);
-            });
-
-            if (filteredData.length > 0) {
-                displayTable(filteredData);
-                $("#exportButtons").show(); 
+            // Si la columna es "Asset Photo" y el contenido es un link, mostrar la imagen
+            if (header.toLowerCase() === "asset photo" && cellData.startsWith("http")) {
+                table += "<td><img src='" + cellData + "' width='100' height='100'></td>";
             } else {
-                $("#data").html("<p style='color:red;'>No se encontraron recursos asignados.</p>");
-                $("#exportButtons").hide();
+                table += "<td>" + cellData + "</td>";
+            }
+        });
+        table += "</tr>";
+    });
+
+    table += "</tbody></table>";
+    $("#data").html(table);
+
+    // Aplicar DataTables para búsqueda, paginación y ordenación
+    $('#dataTable').DataTable({
+        "paging": true,  
+        "ordering": true,  
+        "info": true,  
+        "searching": true, 
+        "language": {
+            "search": "Buscar en la tabla:",
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros en total)",
+            "paginate": {
+                "first": "Primero",
+                "last": "Último",
+                "next": "Siguiente",
+                "previous": "Anterior"
             }
         }
-
-        function displayTable(data) {
-            var headers = Object.keys(data[0]).map(header => header.trim());
-            headers = headers.filter(header => !hiddenColumns.includes(header));
-
-            if (headers.includes("Assigned to")) {
-                headers = headers.filter(h => h !== "Assigned to");
-                headers.unshift("Assigned to"); 
-            }
-
-            var table = "<table id='dataTable'><thead><tr>";
-
-            $.each(headers, function(index, header) {
-                table += "<th>" + header + "</th>";
-            });
-
-            table += "</tr></thead><tbody>";
-
-            $.each(data, function(key, value) {
-                table += "<tr>";
-                $.each(headers, function(index, header) {
-                    var cellData = value[header] || "";
-                    table += "<td>" + cellData + "</td>";
-                });
-                table += "</tr>";
-            });
-
-            table += "</tbody></table>";
-            $("#data").html(table);
-        }
-
-        function exportToPDF() {
-            var { jsPDF } = window.jspdf;
-            var doc = new jsPDF();
-
-            // Agregar logo
-            var img = new Image();
-            img.src = "https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png";
-            doc.addImage(img, 'PNG', 10, 10, 50, 30);
-
-            doc.text("Reporte de Recursos Asignados", 70, 20);
-            doc.autoTable({ html: "#dataTable", startY: 50 });
-            doc.save("Recursos_Asignados.pdf");
-        }
-    </script>
-</body>
-</html>
+    });
+}
