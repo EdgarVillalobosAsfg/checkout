@@ -182,15 +182,16 @@
             var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
             saveAs(csvFile, "Recursos_Asignados.csv");
         }
-
+        
     function exportToPDF() {
     var { jsPDF } = window.jspdf;
     var doc = new jsPDF('p', 'mm', 'a4');
 
-    // Agregar el logo en la parte superior
-    var img = new Image();
-    img.src = "https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png";
-    doc.addImage(img, 'PNG', 10, 10, 40, 20); // Posición y tamaño del logo
+    // Imagen Base64 del logo (reemplázala con la tuya si tienes otra versión)
+    var logoBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."; // Aquí va la cadena Base64 completa
+
+    // Agregar el logo sin depender de CORS
+    doc.addImage(logoBase64, 'PNG', 10, 10, 40, 20); // Posición y tamaño del logo
 
     // Título del documento
     doc.setFontSize(16);
@@ -230,7 +231,6 @@
     // Guardar el archivo PDF
     doc.save("Recursos_Asignados.pdf");
 }
-
     </script>
 </body>
 </html>
