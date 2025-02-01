@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Recursos</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         body {
@@ -31,7 +30,7 @@
     </style>
 </head>
 <body>
-    <img id="logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/9/92/American_School_Foundation_of_Guadalajara_seal.svg/1200px-American_School_Foundation_of_Guadalajara_seal.svg.png" alt="American School Foundation of Guadalajara">
+    <img id="logo" src="https://cmsv2-assets.apptegy.net/uploads/15550/logo/16746/logo_template_300.png" alt="American School Foundation of Guadalajara">
     
     <h2>Consulta de Recursos</h2>
 
@@ -45,9 +44,8 @@
         <button type="submit">Buscar</button>
     </form>
 
-    <!-- Botones de Exportación -->
+    <!-- Botón de Exportación a CSV -->
     <div id="exportButtons" style="display:none;">
-        <button id="exportExcel">📥 Exportar a Excel</button>
         <button id="exportCSV">📥 Exportar a CSV</button>
     </div>
 
@@ -84,16 +82,12 @@
 
                 if (filteredData.length > 0) {
                     displayTable(filteredData);
-                    $("#exportButtons").show(); // Mostrar botones de exportación
+                    $("#exportButtons").show(); // Mostrar botón de exportación
                     $("#welcomeMessage").hide();
                 } else {
                     $("#data").html("<p style='color:red;'>No se encontraron recursos asignados.</p>");
                     $("#exportButtons").hide();
                 }
-            });
-
-            $("#exportExcel").click(function() {
-                exportToExcel();
             });
 
             $("#exportCSV").click(function() {
@@ -134,12 +128,6 @@
 
             table += "</tbody></table>";
             $("#data").html(table);
-        }
-
-        function exportToExcel() {
-            var table = document.getElementById("dataTable");
-            var wb = XLSX.utils.table_to_book(table, { sheet: "Recursos" });
-            XLSX.writeFile(wb, "Recursos_Asignados.xlsx");
         }
 
         function exportToCSV() {
