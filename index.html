@@ -166,26 +166,21 @@
             table += "</tbody></table>";
             $("#data").html(table);
 
-            // Aplicar DataTables para búsqueda, paginación y ordenación
-            $('#dataTable').DataTable({
-                "paging": true,  
-                "ordering": true,  
-                "info": true,  
-                "searching": true, 
-                "language": {
-                    "search": "Buscar en la tabla:",
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
-                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                    "infoEmpty": "No hay registros disponibles",
-                    "infoFiltered": "(filtrado de _MAX_ registros en total)",
-                    "paginate": {
-                        "first": "Primero",
-                        "last": "Último",
-                        "next": "Siguiente",
-                        "previous": "Anterior"
-                    }
-                }
+            $('#dataTable').DataTable();
+        }
+
+        function exportToCSV() {
+            var csv = [];
+            $("#dataTable tr").each(function() {
+                var row = [];
+                $(this).find("td, th").each(function() {
+                    row.push($(this).text().trim());
+                });
+                csv.push(row.join(","));
             });
+
+            var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+            saveAs(csvFile, "Recursos_Asignados.csv");
         }
 
         function exportToPDF() {
