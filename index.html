@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Recursos</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
+                if (data.length > 0) {
+                    var headers = Object.keys(data[0]); // Obtiene dinámicamente los encabezados
+                    var table = "<table border='1' width='100%'><thead><tr>";
+
+                    // Agregar encabezados de forma automática
+                    $.each(headers, function(index, header) {
+                        table += "<th>" + header + "</th>";
+                    });
+
+                    table += "</tr></thead><tbody>";
+
+                    // Agregar filas dinámicamente
+                    $.each(data, function(key, value) {
+                        table += "<tr>";
+                        $.each(headers, function(index, header) {
+                            table += "<td>" + (value[header] || "") + "</td>"; // Evita valores "undefined"
+                        });
+                        table += "</tr>";
+                    });
+
+                    table += "</tbody></table>";
+                    $("#data").html(table);
+                } else {
+                    $("#data").html("No hay datos disponibles.");
+                }
+            }).fail(function() {
+                $("#data").html("Error al cargar los datos.");
+            });
+        });
+    </script>
+</head>
+<body>
+    <h2>Consulta de Recursos</h2>
+    <div id="data">Cargando datos...</div>
+</body>
+</html>
