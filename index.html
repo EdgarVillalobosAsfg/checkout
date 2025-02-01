@@ -6,6 +6,8 @@
     <title>Consulta de Recursos</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,14 +36,14 @@
     
     <h2>Consulta de Recursos</h2>
 
-    <div id="welcomeMessage">
+    <div id="welcomeMessage" style="display:none;">
         <h3>Bienvenido, por favor ingresa tu Nombre o Employee ID para consultar tus recursos asignados.</h3>
     </div>
 
-    <!-- Búsqueda en Tiempo Real -->
     <form id="searchForm">
         <label for="searchInput">Ingresa tu Nombre o Employee ID:</label>
-        <input type="text" id="searchInput">
+        <input type="text" id="searchInput" required>
+        <button type="submit">Buscar</button>
     </form>
 
     <!-- Botón de Exportación a CSV -->
@@ -58,9 +60,30 @@
         $(document).ready(function() {
             fetchData();
 
-            // Búsqueda en tiempo real al escribir en el campo de búsqueda
-            $("#searchInput").on("keyup", function() {
-                searchLive();
+            $("#searchForm").submit(function(event) {
+                event.preventDefault();
+                var searchValue = $("#searchInput").val().trim().toLowerCase();
+                console.log("Valor ingresado en la búsqueda:", searchValue);
+
+                if (searchValue === "") {
+                    alert("Por favor ingresa tu Nombre o Employee ID.");
+                    return;
+                }
+
+                var filteredData = allData.filter(function(item) {
+                    var name = item["Name"] ? item["Name"].toLowerCase() : "";
+                    var employeeID = item["Employee ID"] ? item["Employee ID"].toLowerCase() : "";
+                    return name.includes(searchValue) || employeeID.includes(searchValue);
+                });
+
+                if (filteredData.length > 0) {
+                    displayTable(filteredData);
+                    $("#exportButtons").show(); 
+                    $("#welcomeMessage").hide();
+                } else {
+                    $("#data").html("<p style='color:red;'>No se encontraron recursos asignados.</p>");
+                    $("#exportButtons").hide();
+                }
             });
 
             $("#exportCSV").click(function() {
@@ -72,28 +95,10 @@
             $.getJSON("https://script.google.com/macros/s/AKfycbycHQ06-Zf6U9yvvycOo7iL7C4SzM0pbMl4_WUQx94OsxrQW0_qnkdjRsghEpdLBvAfWw/exec", function(data) {
                 console.log("Datos cargados desde la API:", data);
                 allData = data;
-                displayTable(allData);
+                $("#welcomeMessage").show();
             }).fail(function() {
                 $("#data").html("<p style='color:red;'>Error al cargar los datos desde la API.</p>");
             });
-        }
-
-        function searchLive() {
-            var searchValue = $("#searchInput").val().trim().toLowerCase();
-
-            var filteredData = allData.filter(function(item) {
-                var name = item["Name"] ? item["Name"].toLowerCase() : "";
-                var employeeID = item["Employee ID"] ? item["Employee ID"].toLowerCase() : "";
-                return name.includes(searchValue) || employeeID.includes(searchValue);
-            });
-
-            if (filteredData.length > 0) {
-                displayTable(filteredData);
-                $("#exportButtons").show(); 
-            } else {
-                $("#data").html("<p style='color:red;'>No se encontraron recursos asignados.</p>");
-                $("#exportButtons").hide();
-            }
         }
 
         function displayTable(data) {
@@ -105,7 +110,7 @@
                 headers.unshift("Assigned to"); 
             }
 
-            var table = "<table id='dataTable'><thead><tr>";
+            var table = "<table id='dataTable' class='display'><thead><tr>";
 
             $.each(headers, function(index, header) {
                 table += "<th>" + header + "</th>";
@@ -129,6 +134,26 @@
 
             table += "</tbody></table>";
             $("#data").html(table);
+
+            // Aplicar DataTables para búsqueda en tiempo real y ordenación
+            $('#dataTable').DataTable({
+                "paging": true,  // Agregar paginación
+                "ordering": true,  // Habilitar ordenación por columnas
+                "info": true,  // Mostrar información de cuántos registros hay
+                "language": {
+                    "search": "Buscar:",
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    "infoEmpty": "No hay registros disponibles",
+                    "infoFiltered": "(filtrado de _MAX_ registros en total)",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
+                }
+            });
         }
 
         function exportToCSV() {
