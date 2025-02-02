@@ -9,8 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <meta name="google-signin-client_id" content="TU_CLIENT_ID.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         body {
@@ -69,11 +67,6 @@
         <div id="welcomeMessage">
             <h3>Bienvenido, por favor ingresa tu Employee ID para consultar tus recursos asignados.</h3>            
         </div>
-        
-          <div id="googleLogin">
-            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-        </div>
-         </div>   
         <!-- Búsqueda -->
         <form id="searchForm">
             <label for="searchInput">Ingresa tu Employee ID:</label>
@@ -252,30 +245,7 @@ function exportToPDF() {
     // Guardar el archivo PDF
     doc.save("Recursos_Asignados.pdf");
 }
-
-function onSignIn(googleUser) {
-    var profile = googleUser.getBasicProfile();
-    var email = profile.getEmail();
-
-    // Lista de correos autorizados (cambia esto)
-    var allowedEmails = ["usuario1@asfg.edu.mx", "usuario2@asfg.edu.mx"];
-
-    if (allowedEmails.includes(email)) {
-        $("#googleLogin").hide();
-        $("#container").show();
-    } else {
-        alert("Acceso denegado. No tienes permiso para ver esta información.");
-        signOut();
-    }
-}
-
-function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-        $("#container").hide();
-        $("#googleLogin").show();
-    });
-}      
+    
     </script>    
 </body>
 </html>
