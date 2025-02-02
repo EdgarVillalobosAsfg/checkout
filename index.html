@@ -69,7 +69,9 @@
         <div id="welcomeMessage">
             <h3>Bienvenido, por favor ingresa tu Employee ID para consultar tus recursos asignados.</h3>
         </div>
-
+          <div id="googleLogin">
+            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+        </div>
         <!-- Búsqueda -->
         <form id="searchForm">
             <label for="searchInput">Ingresa tu Employee ID:</label>
@@ -272,11 +274,6 @@ function signOut() {
         $("#googleLogin").show();
     });
 }      
-    </script>
-
-    <div id="googleLogin">
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    </div>
-    
+    </script>    
 </body>
 </html>
