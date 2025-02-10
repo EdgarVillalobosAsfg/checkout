@@ -244,8 +244,14 @@ function exportToPDF() {
     // Guardar el archivo PDF
     doc.save("Recursos_Asignados.pdf");
 }
-    </script>    
-<button class="btn" onclick="window.location.href='https://www.asfg.edu.mx/forms/11079'">
+
+function redirigir() {
+            window.location.assign("https://www.asfg.edu.mx/forms/11079");
+        }
+        
+    </script> 
+    
+<button class="btn" onclick="redirigir()">
         Ir al Formulario
     </button>
     
