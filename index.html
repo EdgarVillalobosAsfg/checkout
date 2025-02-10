@@ -245,14 +245,14 @@ function exportToPDF() {
     doc.save("Recursos_Asignados.pdf");
 }
 
-function redirigir() {
-             window.location.href = "https://www.asfg.edu.mx/forms/11079"; // Carga la página en la misma pestaña
+  function abrirVentana() {
+            window.open("https://www.asfg.edu.mx/forms/11079", "popupForm", "width=800,height=600,scrollbars=yes");
         }
         
     </script> 
     
-<button class="btn" onclick="redirigir()">
-        Ir al Formulario
+<button class="btn" onclick="abrirVentana()">
+        Abrir Formulario0
     </button>
     
 </body>
