@@ -56,14 +56,6 @@
         button:hover {
             background-color: #0056b3;
         }
-
-          #formContainer {
-            width: 100%;
-            height: 600px;
-            margin-top: 20px;
-            display: none; /* Oculto hasta que el usuario haga clic */
-            border: 1px solid #ccc;
-        }
     </style>
 </head>
 <body>
@@ -251,21 +243,7 @@ function exportToPDF() {
 
     // Guardar el archivo PDF
     doc.save("Recursos_Asignados.pdf");
-}
-
-  function mostrarFormulario() {
-            var iframe = document.getElementById("formContainer");
-            iframe.style.display = "block"; // Muestra el formulario
-            iframe.src = "https://www.asfg.edu.mx/forms/11079"; // Carga la URL en el iframe
-        }
-        
-    </script> 
-    
-<button class="btn" onclick="mostrarFormulario()">
-        Mostrar Formulario
-    </button>
-
-    <iframe id="formContainer" width="100%" height="600px"></iframe>
-    
+}       
+    </script>       
 </body>
 </html>
